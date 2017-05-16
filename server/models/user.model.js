@@ -4,6 +4,7 @@ import httpStatus from 'http-status';
 import APIError from '../helpers/APIError';
 import jwt from 'jsonwebtoken';
 import config from '../../config/config';
+import { dateDiff } from '../tools/toolutils';
 
 /**
  * User Schema
@@ -23,11 +24,11 @@ const UserSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now()
   },
   uploadImages: [
     {
@@ -42,8 +43,9 @@ const UserSchema = new mongoose.Schema({
  * - validations
  * - virtuals
  */
-UserSchema.pre('save', function(next) {
-  this.updatedAt = Date.now;
+UserSchema.pre('save', function (next) {
+  this.updatedAt = Date.now();
+  console.log('update at now = '+this.updatedAt);
   next();
 });
 
@@ -52,10 +54,25 @@ UserSchema.pre('save', function(next) {
  */
 UserSchema.methods = {
   genToken() {
-    return jwt.sign({
-      userId: this._id,
-      loginAt: this.updatedAt
-    }, config.jwtSecret); 
+    console.log('Diff time = '+this.updatedAt);
+    let hours = dateDiff(Date.parse(this.updatedAt), Date.now(), 'h');
+    if (hours > 4) {
+      this.save()
+        .then(saveUser => {
+          return jwt.sign({
+            userId: saveUser._id,
+            loginAt: saveUser.updatedAt
+          }, config.jwtSecret);
+        })
+        .catch(e => {
+          return Promise.reject(e);
+        })
+    } else {
+      return jwt.sign({
+        userId: this._id,
+        loginAt: this.updatedAt
+      }, config.jwtSecret);
+    }
   }
 };
 
@@ -83,7 +100,7 @@ UserSchema.statics = {
     return this.findById(id)
       .exec()
       .then((user) => {
-        if(user) {
+        if (user) {
           return user;
         }
         return Promise.reject('没有找到用户');
@@ -91,11 +108,11 @@ UserSchema.statics = {
   },
 
   getUserByMobileNumber(mobileNumber) {
-    return this.findOne({mobileNumber})
+    return this.findOne({ mobileNumber })
       .exec()
       .then((user) => {
-        if(user) {
-          console.log('find user by mobile = '+mobileNumber);
+        if (user) {
+          console.log('find user by mobile = ' + mobileNumber);
           return user;
         }
         return Promise.reject('没有找到用户');
