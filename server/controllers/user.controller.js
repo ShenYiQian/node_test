@@ -77,4 +77,10 @@ function remove(req, res, next) {
     .catch(e => next(e));
 }
 
-export default { load, get, create, update, list, remove };
+function profile(req, res ,next) {
+  res.json({
+    status: 'ok'
+  })
+}
+
+export default { load, get, create, update, list, remove, profile };

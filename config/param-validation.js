@@ -40,5 +40,13 @@ export default {
       pswd: Joi.string().required(),
       pswdcfm: Joi.string().required()
     }
+  },
+
+  profile: {
+    query: {
+      username: Joi.string().required(),
+      city: Joi.string().required(),
+      desc: Joi.string().optional(),
+    }
   }
 };

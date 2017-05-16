@@ -6,12 +6,6 @@ import User from '../models/user.model';
 import { sha1, dateDiff } from '../tools/toolutils';
 import Joi from 'joi';
 
-// sample user, used for authentication
-const user = {
-  username: 'react',
-  password: 'express'
-};
-
 function register(req, res, next) {
   let { mobile, pswd, pswdcfm } = req.query;
   let paramPassed = [mobile, pswd, pswdcfm].some(v => {
@@ -68,13 +62,6 @@ function register(req, res, next) {
   }
 }
 
-/**
- * Returns jwt token if valid username and password is provided
- * @param req
- * @param res
- * @param next
- * @returns {*}
- */
 function login(req, res, next) {
   console.log('enter login')
   // Ideally you'll fetch this from the db
@@ -132,18 +119,4 @@ function loginByToken(req, res, next) {
     })
 }
 
-/**
- * This is a protected route. Will return random number only if jwt token is provided in header.
- * @param req
- * @param res
- * @returns {*}
- */
-function getRandomNumber(req, res) {
-  // req.user is assigned by jwt middleware if valid token is provided
-  return res.json({
-    user: req.user,
-    num: Math.random() * 100
-  });
-}
-
-export default { login, loginByToken, register, getRandomNumber };
+export default { login, loginByToken, register };

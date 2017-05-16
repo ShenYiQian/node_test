@@ -14,12 +14,6 @@ router.route('/login')
 router.route('/logintoken')
   .get(validate(paramValidation.loginByToken), authCtrl.loginByToken);
 
-
-/** GET /api/auth/random-number - Protected route,
- * needs token returned by the above as header. Authorization: Bearer {token} */
-/*router.route('/random-number')
-  .get(expressJwt({ secret: config.jwtSecret }), authCtrl.getRandomNumber);*/
-
 router.get('/testlogin', (req, res) => {
   console.log(req.query);
   return res.json({
