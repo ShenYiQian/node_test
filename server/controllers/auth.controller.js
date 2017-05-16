@@ -76,7 +76,7 @@ function login(req, res, next) {
       } else {
         console.log('password currect');
         const token = user.genToken();
-        console.log('genToken = '+token);
+        console.log('genToken = ' + token);
         return res.json({
           status: 'ok',
           token
@@ -93,23 +93,13 @@ function login(req, res, next) {
 
 function loginByToken(req, res, next) {
   let { token } = req.query;
-  let decode = jwt.verify(token, config.jwtSecret);
-  let { userId, loginAt } = decode;
-  User.getUserById(userId)
+  checkToken(token)
     .then((user) => {
-      let days = dateDiff(Date.parse(loginAt), Date.now());
-      if (days > 7) {
-        return res.json({
-          status: 'err',
-          msg: '您离开时间过多，请重新登陆'
-        })
-      } else {
-        const token = user.genToken();
-        return res.json({
-          status: 'ok',
-          token
-        })
-      }
+      const newToken = user.genToken();
+      return res.json({
+        status: 'ok',
+        token
+      });
     })
     .catch(e => {
       return res.json({
@@ -119,4 +109,24 @@ function loginByToken(req, res, next) {
     })
 }
 
-export default { login, loginByToken, register };
+function checkToken(token) {
+  return new Promise(function (resolve, reject) {
+    let decode = jwt.verify(token, config.jwtSecret);
+    let { userId, loginAt } = decode;
+    User.getUserById(userId)
+      .then((user) => {
+        let days = dateDiff(Date.parse(loginAt), Date.now());
+        if (days > 7) {
+          reject('您离开时间太长，请重新登陆');
+        } else {
+          resolve(user);
+        }
+      })
+      .catch(e => {
+        reject(e);
+      })
+  })
+
+}
+
+export default { login, loginByToken, register, checkToken };
