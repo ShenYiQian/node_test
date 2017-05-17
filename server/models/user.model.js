@@ -1,7 +1,5 @@
 import Promise from 'bluebird';
 import mongoose from 'mongoose';
-import httpStatus from 'http-status';
-import APIError from '../helpers/APIError';
 import jwt from 'jsonwebtoken';
 import config from '../../config/config';
 import { dateDiff } from '../tools/toolutils';
@@ -63,7 +61,6 @@ UserSchema.pre('save', function (next) {
  */
 UserSchema.methods = {
   genToken() {
-    console.log('Diff time = '+this.updatedAt);
     let hours = dateDiff(Date.parse(this.updatedAt), Date.now(), 'h');
     if (hours > 4) {
       this.save()
