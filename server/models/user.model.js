@@ -11,7 +11,8 @@ import { dateDiff } from '../tools/toolutils';
  */
 const UserSchema = new mongoose.Schema({
   username: {
-    type: String
+    type: String,
+    default: ''
   },
   password: {
     type: String,

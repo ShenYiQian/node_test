@@ -2,43 +2,6 @@ import User from '../models/user.model';
 import authCtrl from './auth.controller';
 
 /**
- * Load user and append to req.
- */
-function load(req, res, next, id) {
-  User.get(id)
-    .then((user) => {
-      req.user = user; // eslint-disable-line no-param-reassign
-      return next();
-    })
-    .catch(e => next(e));
-}
-
-/**
- * Get user
- * @returns {User}
- */
-function get(req, res) {
-  return res.json(req.user);
-}
-
-/**
- * Create new user
- * @property {string} req.body.username - The username of user.
- * @property {string} req.body.mobileNumber - The mobileNumber of user.
- * @returns {User}
- */
-function create(req, res, next) {
-  const user = new User({
-    username: req.body.username,
-    mobileNumber: req.body.mobileNumber
-  });
-
-  user.save()
-    .then(savedUser => res.json(savedUser))
-    .catch(e => next(e));
-}
-
-/**
  * Update existing user
  * @property {string} req.body.username - The username of user.
  * @property {string} req.body.mobileNumber - The mobileNumber of user.
@@ -54,37 +17,17 @@ function update(req, res, next) {
     .catch(e => next(e));
 }
 
-/**
- * Get user list.
- * @property {number} req.query.skip - Number of users to be skipped.
- * @property {number} req.query.limit - Limit number of users to be returned.
- * @returns {User[]}
- */
-function list(req, res, next) {
-  const { limit = 50, skip = 0 } = req.query;
-  User.list({ limit, skip })
-    .then(users => res.json(users))
-    .catch(e => next(e));
-}
-
-/**
- * Delete user.
- * @returns {User}
- */
-function remove(req, res, next) {
-  const user = req.user;
-  user.remove()
-    .then(deletedUser => res.json(deletedUser))
-    .catch(e => next(e));
-}
-
-function profile(req, res ,next) {
+function profile(req, res, next) {
   let { uname, city, desc, token } = req.query;
   authCtrl.checkToken(token)
     .then(user => {
       user.username = uname;
-      user.city = city ? city : '';
-      user.desc = desc ? desc : '';
+      if(city) {
+        user.city = city;
+      }
+      if(desc) {
+        user.desc = desc;
+      }
       user.save()
         .then(saveUser => {
           return res.json({
@@ -110,4 +53,42 @@ function profile(req, res ,next) {
     })
 }
 
-export default { load, get, create, update, list, remove, profile };
+function updateUser(req, res, next) {
+  let { uname, city, desc, token } = req.query;
+  authCtrl.checkToken(token)
+    .then(user => {
+      let needUpdate = false;
+      if(uname) {
+        user.username = uname;
+        needUpdate = true;
+      }
+      if(city) {
+        user.city = city;
+        needUpdate = true;
+      }
+      if(desc) {
+        user.desc = desc;
+        needUpdate = true;
+      }
+      if(needUpdate) {
+        user.save()
+          .then(saveUser => {
+            return res.json({
+              status: 'ok',
+              user: {
+                city: user.city,
+                desc: user.desc
+              }
+            });
+          })
+          .catch(e => {
+            return res.json({
+              status: 'err',
+              msg: e
+            });
+          })
+      }
+    })
+}
+
+export default { update, profile, updateUser };
