@@ -3,6 +3,7 @@ import userRoutes from './user.route';
 import authRoutes from './auth.route';
 import authCtrl from '../controllers/auth.controller';
 import fs from 'fs-extra';
+import uuid from 'node-uuid';
 
 const router = express.Router(); // eslint-disable-line new-cap
 
@@ -21,17 +22,15 @@ router.post('/upload', (req, res) => {
   } else {
     authCtrl.checkToken(token)
       .then(user => {
-        console.log('upload get user success');
         let fstream;
         req.pipe(req.busboy);
         req.busboy.on('file', (fieldname, file, filename) => {
-          console.log('Uploading: ' + filename + ' dirname = ' + __dirname);
-          let filePath = `${__dirname}/../../public/${filename}`;
+          let saveAs = uuid.v1() + filename;
+          let filePath = `${__dirname}/../../public/${saveAs}`;
           fstream = fs.createWriteStream(filePath);
           file.pipe(fstream);
           fstream.on('close', () => {
-            console.log('Upload Finished of ' + filename);
-            user.uploadImages[0] = `localhost:4040/public/${filename}`;
+            user.uploadImages[0] = `localhost:4040/public/${saveAs}`;
 
             user.save()
               .then(saveUser => {
@@ -50,7 +49,6 @@ router.post('/upload', (req, res) => {
         });
       })
       .catch(e => {
-        console.log('upload error e = '+e);
         return res.json({
           status: 'err',
           msg: e
@@ -61,6 +59,9 @@ router.post('/upload', (req, res) => {
 
 router.get('/testlogin', (req, res) => {
   console.log(req.query);
+  return res.json({
+    status: 'ok',
+  });
 });
 
 // mount user routes at /users

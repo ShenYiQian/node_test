@@ -1,4 +1,5 @@
 import User from '../models/user.model';
+import authCtrl from './auth.controller';
 
 /**
  * Load user and append to req.
@@ -78,9 +79,35 @@ function remove(req, res, next) {
 }
 
 function profile(req, res ,next) {
-  res.json({
-    status: 'ok'
-  })
+  let { uname, city, desc, token } = req.query;
+  authCtrl.checkToken(token)
+    .then(user => {
+      user.username = uname;
+      user.city = city ? city : '';
+      user.desc = desc ? desc : '';
+      user.save()
+        .then(saveUser => {
+          return res.json({
+            status: 'ok',
+            user: {
+              city: user.city,
+              desc: user.desc
+            }
+          });
+        })
+        .catch(e => {
+          return res.json({
+            status: 'err',
+            msg: e
+          })
+        })
+    })
+    .catch(e => {
+      return res.json({
+        status: 'err',
+        msg: e
+      });
+    })
 }
 
 export default { load, get, create, update, list, remove, profile };

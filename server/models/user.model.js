@@ -30,6 +30,14 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now()
   },
+  city: {
+    type: String,
+    default: ''
+  },
+  desc: {
+    type: String,
+    default: ''
+  },
   uploadImages: [
     {
       type: String,
