@@ -4,15 +4,16 @@ import mongoose from 'mongoose';
 const InfoSchema = new mongoose.Schema({
     freeTimes: [
         {
-            weekday: { type: Number, min: 1, max: 7 },
-            interval: { type: String, enum: ['上午', '下午'] },
-            orderIds: [ Schema.Types.ObjectId ]
+            office: { type: String, required: true },
+            times: [
+                {
+                    weekday: { type: Number, min: 1, max: 7 },
+                    interval: { type: String, enum: ['上午', '下午'] },
+                    orderIds: [Schema.Types.ObjectId]
+                }
+            ]
         }
     ],
-    hospital: {
-        type: String,
-        required: true
-    },
     owner: {
         type: Schema.Types.ObjectId,
         required: true
@@ -27,17 +28,17 @@ const InfoSchema = new mongoose.Schema({
     }
 });
 
-InfoSchema.pre('save', function(next) {
+InfoSchema.pre('save', function (next) {
     this.updatedAt = Date.now();
     next();
-})
+});
 
 InfoSchema.statics = {
     findInfoById(id) {
         return this.findById(id)
             .exec()
             .then(info => {
-                if(info) {
+                if (info) {
                     return info;
                 }
                 return Promise.reject('没有找到该信息');
@@ -48,7 +49,7 @@ InfoSchema.statics = {
         return this.findOne({ owner })
             .exec()
             .then(info => {
-                if(info) {
+                if (info) {
                     return info;
                 }
                 return Promise.reject('没有找到该用户的信息');

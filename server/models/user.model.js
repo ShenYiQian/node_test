@@ -33,6 +33,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  hospital: {
+    type: String,
+    required: true
+  },
   desc: {
     type: String,
     default: ''
@@ -52,7 +56,7 @@ const UserSchema = new mongoose.Schema({
  */
 UserSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
-  console.log('update at now = '+this.updatedAt);
+  console.log('update at now = ' + this.updatedAt);
   next();
 });
 
