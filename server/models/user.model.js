@@ -35,7 +35,7 @@ const UserSchema = new mongoose.Schema({
   },
   hospital: {
     type: String,
-    required: true
+    default: ''
   },
   desc: {
     type: String,
@@ -45,7 +45,11 @@ const UserSchema = new mongoose.Schema({
     {
       type: String,
     }
-  ]
+  ],
+  isUser: {
+    type: Boolean,
+    default: true 
+  }
 });
 
 /**

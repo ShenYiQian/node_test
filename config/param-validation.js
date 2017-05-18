@@ -35,6 +35,7 @@ export default {
     query: {
       token: Joi.string().required(),
       uname: Joi.string().required(),
+      isUser: Joi.boolean().required(),
       city: Joi.string().required(),
       desc: Joi.string().optional(),
     }
