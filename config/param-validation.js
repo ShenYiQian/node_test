@@ -48,5 +48,13 @@ export default {
       city: Joi.strict().optional(),
       desc: Joi.string().optional(),
     }
+  },
+
+  setFreeTime: {
+    query: {
+      token: Joi.string().required(),
+      office: Joi.string().required(),
+      indexes: Joi.array().required(),
+    }
   }
 };

@@ -11,4 +11,7 @@ router.route('/profile')
 router.route('/update')
   .get(validate(paramValidation.updateUser), userCtrl.updateUser);
 
+router.route('/setfreetime')
+  .get(validate(paramValidation.setFreeTime), userCtrl.setFreeTime);
+
 export default router;

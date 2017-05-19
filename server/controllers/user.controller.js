@@ -94,15 +94,52 @@ function updateUser(req, res, next) {
 }
 
 function setFreeTime(req, res, next) {
-    let { token } = req.query;
+    let { token, office, indexes } = req.query;
     authCtrl.checkToken(token)
         .then(user => {
             Info.findInfoByOwner(user._id)
                 .then(info => {
+                    info.freeTimes[office] = [];
+                    for (let i = 0; i < 14; i++) {
+                        info.freeTimes[office].push({ isFree: indexes.some(v => { return v == i; }) })
+                    }
 
+                    info.save()
+                        .then(saveInfo => {
+                            return res.json({
+                                status: 'ok',
+                                info: saveInfo
+                            })
+                        })
+                        .catch(e => {
+                            return res.json({
+                                status: 'err',
+                                msg: e
+                            })
+                        })
                 })
                 .catch(e => {
+                    const newInfo = new Info();
+                    newInfo.owner = user._id;
+                    newInfo.freeTimes = {};
+                    newInfo.freeTimes[office] = [];
+                    for (let i = 0; i < 14; i++) {
+                        newInfo.freeTimes[office].push({ isFree: indexes.some(v => { return v == i; }) })
+                    }
 
+                    newInfo.save()
+                        .then(saveInfo => {
+                            return res.json({
+                                status: 'ok',
+                                info: saveInfo
+                            });
+                        })
+                        .catch(e => {
+                            return res.json({
+                                status: 'err',
+                                msg: e
+                            });
+                        })
                 })
         })
         .catch(e => {
@@ -111,9 +148,6 @@ function setFreeTime(req, res, next) {
                 msg: e
             })
         })
-    return res.json({
-        status: 'ok'
-    });
 }
 
-export default { update, profile, updateUser };
+export default { update, profile, updateUser, setFreeTime };

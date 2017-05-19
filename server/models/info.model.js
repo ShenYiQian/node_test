@@ -2,18 +2,10 @@ import Promise from 'bluebird';
 import mongoose, { Schema } from 'mongoose';
 
 const InfoSchema = new mongoose.Schema({
-    freeTimes: [
-        {
-            office: { type: String, required: true },
-            times: [
-                {
-                    weekday: { type: Number, min: 1, max: 7 },
-                    interval: { type: String, enum: ['上午', '下午'] },
-                    orderIds: [Schema.Types.ObjectId]
-                }
-            ]
-        }
-    ],
+    freeTimes: {
+        type: Schema.Types.Mixed,
+        required: true
+    },
     owner: {
         type: Schema.Types.ObjectId,
         required: true
