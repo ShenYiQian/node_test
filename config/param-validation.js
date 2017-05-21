@@ -54,7 +54,9 @@ export default {
     query: {
       token: Joi.string().required(),
       office: Joi.string().required(),
-      indexes: Joi.array().required(),
+      weekday: Joi.number().min(0).max(6).required(),
+      state: Joi.number().min(0).max(3).required(),
+      need: Joi.number().optional(),
     }
   }
 };

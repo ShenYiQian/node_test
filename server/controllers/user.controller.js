@@ -1,6 +1,7 @@
 import User from '../models/user.model';
 import Info from '../models/info.model';
 import authCtrl from './auth.controller';
+import * as stateConst from '../constants/stateConst';
 
 function profile(req, res, next) {
     let { uname, city, desc, isUser, token } = req.query;
@@ -77,16 +78,53 @@ function updateUser(req, res, next) {
         })
 }
 
+function setDailyData(i, state, need) {
+    return {
+        state: (state == i || state == stateConst.FREE_TIME_STATE_ALLDAY) ? 0 : 1,
+        need,
+        inviteOrders: [],
+        requestOrders: [],
+        acceptOrders: []
+    };
+}
+
+function setOfficeState(info, office, weekday, state, need) {
+    let officeData = info.freeTimes[office];
+    if (officeData != null) {
+        let dailyData = officeData[weekday];
+        for(let i = 0; i < 2; i++) {
+            dailyData[i] = setDailyData(i, state, need);
+        }
+    } else {
+        officeData = new Array;
+        for (let i = 0; i < 7; i++) {
+            let dailyData = officeData[i] = [];
+            if (i == weekday) {
+                for(let j = 0; j < 2; j++) {
+                    dailyData[j] = setDailyData(j, state, need);
+                }
+            } else {
+                dailyData[0] = dailyData[1] = {
+                    state: 1,
+                    need: 0,
+                    inviteOrders: [],
+                    requestOrders: [],
+                    acceptOrders: []
+                }
+            }
+        }
+    }
+    return officeData;
+}
+
 function setFreeTime(req, res, next) {
-    let { token, office, indexes } = req.query;
+    let { token, office, weekday, state, need } = req.query;
+    need = need ? need : 0;
     authCtrl.checkToken(token)
         .then(user => {
             Info.findInfoByOwner(user._id)
                 .then(info => {
-                    info.freeTimes[office] = [];
-                    for (let i = 0; i < 7; i++) {
-                        info.freeTimes[office].push({ state: indexes[i] })
-                    }
+                    info.freeTimes[office] = setOfficeState(info, office, weekday, state, need);
                     info.markModified('freeTimes');
                     info.save()
                         .then(saveInfo => {
@@ -105,10 +143,8 @@ function setFreeTime(req, res, next) {
                 .catch(e => {
                     const newInfo = new Info();
                     newInfo.owner = user._id;
-                    newInfo.freeTimes[office] = [];
-                    for (let i = 0; i < 7; i++) {
-                        newInfo.freeTimes[office].push({ state: indexes[i] })
-                    }
+                    newInfo.freeTimes = {};
+                    newInfo.freeTimes[office] = setOfficeState(newInfo, office, weekday, state, need);
 
                     newInfo.save()
                         .then(saveInfo => {
