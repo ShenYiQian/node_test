@@ -35,8 +35,8 @@ function profile(req, res, next) {
                     return res.json({
                         status: 'ok',
                         user: {
-                            city: user.city,
-                            desc: user.desc
+                            city: saveUser.city,
+                            desc: saveUser.desc
                         }
                     });
                 })
@@ -100,10 +100,10 @@ function setFreeTime(req, res, next) {
             Info.findInfoByOwner(user._id)
                 .then(info => {
                     info.freeTimes[office] = [];
-                    for (let i = 0; i < 14; i++) {
-                        info.freeTimes[office].push({ isFree: indexes.some(v => { return v == i; }) })
+                    for (let i = 0; i < 7; i++) {
+                        info.freeTimes[office].push({ state: indexes[i] })
                     }
-
+                    info.markModified('freeTimes');
                     info.save()
                         .then(saveInfo => {
                             return res.json({
@@ -124,7 +124,7 @@ function setFreeTime(req, res, next) {
                     newInfo.freeTimes = {};
                     newInfo.freeTimes[office] = [];
                     for (let i = 0; i < 14; i++) {
-                        newInfo.freeTimes[office].push({ isFree: indexes.some(v => { return v == i; }) })
+                        newInfo.freeTimes[office].push({ state: indexes[i] })
                     }
 
                     newInfo.save()

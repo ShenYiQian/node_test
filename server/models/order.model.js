@@ -1,4 +1,3 @@
-import Promise from 'bluebird';
 import mongoose, { Schema } from 'mongoose';
 
 const OrderSchema = new mongoose.Schema({
