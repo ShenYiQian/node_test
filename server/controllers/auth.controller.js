@@ -4,7 +4,6 @@ import APIError from '../helpers/APIError';
 import config from '../../config/config';
 import User from '../models/user.model';
 import { sha1, dateDiff } from '../tools/toolutils';
-import Joi from 'joi';
 
 function register(req, res, next) {
   let { mobile, pswd, pswdcfm } = req.query;

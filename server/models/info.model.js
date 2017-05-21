@@ -1,6 +1,21 @@
 import mongoose, { Schema } from 'mongoose';
 
 const InfoSchema = new mongoose.Schema({
+    /**
+     * freeTime detail
+     * freeTimes ： {
+     *     office: [
+     *         {
+     *             state: 0 empty 1 full
+     *             need: number,
+     *             inviteOrders:[],
+     *             requestOrders:[],
+     *             acceptOrders:[]
+     *         },
+     *         ...
+     *     ]
+     * }
+     */
     freeTimes: {
         type: Schema.Types.Mixed,
         required: true

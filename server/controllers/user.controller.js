@@ -2,22 +2,6 @@ import User from '../models/user.model';
 import Info from '../models/info.model';
 import authCtrl from './auth.controller';
 
-/**
- * Update existing user
- * @property {string} req.body.username - The username of user.
- * @property {string} req.body.mobileNumber - The mobileNumber of user.
- * @returns {User}
- */
-function update(req, res, next) {
-    const user = req.user;
-    user.username = req.body.username;
-    user.mobileNumber = req.body.mobileNumber;
-
-    user.save()
-        .then(savedUser => res.json(savedUser))
-        .catch(e => next(e));
-}
-
 function profile(req, res, next) {
     let { uname, city, desc, isUser, token } = req.query;
     authCtrl.checkToken(token)
@@ -121,9 +105,8 @@ function setFreeTime(req, res, next) {
                 .catch(e => {
                     const newInfo = new Info();
                     newInfo.owner = user._id;
-                    newInfo.freeTimes = {};
                     newInfo.freeTimes[office] = [];
-                    for (let i = 0; i < 14; i++) {
+                    for (let i = 0; i < 7; i++) {
                         newInfo.freeTimes[office].push({ state: indexes[i] })
                     }
 
@@ -150,4 +133,4 @@ function setFreeTime(req, res, next) {
         })
 }
 
-export default { update, profile, updateUser, setFreeTime };
+export default { profile, updateUser, setFreeTime };
