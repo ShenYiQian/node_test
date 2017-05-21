@@ -35,7 +35,7 @@ export default {
     query: {
       token: Joi.string().required(),
       uname: Joi.string().required(),
-      isUser: Joi.boolean().required(),
+      identity: Joi.number().required(),
       city: Joi.string().required(),
       desc: Joi.string().optional(),
     }
@@ -57,6 +57,13 @@ export default {
       weekday: Joi.number().min(0).max(6).required(),
       state: Joi.number().min(0).max(3).required(),
       need: Joi.number().optional(),
+    }
+  },
+  
+  createOrder: {
+    query: {
+      token: Joi.string().required(),
+      sendTo: Joi.string().required(),
     }
   }
 };

@@ -4,11 +4,11 @@ import authCtrl from './auth.controller';
 import * as stateConst from '../constants/stateConst';
 
 function profile(req, res, next) {
-    let { uname, city, desc, isUser, token } = req.query;
+    let { uname, city, desc, identity, token } = req.query;
     authCtrl.checkToken(token)
         .then(user => {
             user.username = uname;
-            user.isUser = isUser;
+            user.identity = identity;
             if (city) {
                 user.city = city;
             }

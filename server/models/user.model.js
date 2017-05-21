@@ -45,9 +45,9 @@ const UserSchema = new mongoose.Schema({
       type: String,
     }
   ],
-  isUser: {
-    type: Boolean,
-    default: true 
+  identity: {
+    type: Number,
+    default: 0   //   0 no define 1 doctor 2 hospital
   }
 });
 
