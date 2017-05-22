@@ -1,15 +1,7 @@
 import Joi from 'joi';
 
 export default {
-  // POST /api/users
-  createUser: {
-    body: {
-      username: Joi.string().required(),
-      mobileNumber: Joi.string().regex(/^[1-9][0-9]{9}$/).required()
-    }
-  },
-
-  // POST /api/auth/login
+  // GET /api/auth/login
   login: {
     query: {
       mobile: Joi.string().regex(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/).required(),
@@ -17,12 +9,14 @@ export default {
     }
   },
 
+  // GET /api/auth/loginbytoken
   loginByToken: {
     query: {
       token: Joi.string().required()
     }
   },
 
+  // GET /api/auth/register
   register: {
     query: {
       mobile: Joi.string().regex(/^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/).required(),
@@ -31,6 +25,7 @@ export default {
     }
   },
 
+  // GET /api/user/profile
   profile: {
     query: {
       token: Joi.string().required(),
@@ -40,7 +35,16 @@ export default {
       desc: Joi.string().optional(),
     }
   },
+
+  // GET /api/user/list
+  listUser: {
+    query: {
+      token: Joi.string().required(),
+      filters: Joi.string().required()
+    }
+  },
   
+  // GET /api/user/update
   updateUser: {
     query: {
       token: Joi.string().required(),
@@ -50,6 +54,7 @@ export default {
     }
   },
 
+  // GET /api/user/setfreetime
   setFreeTime: {
     query: {
       token: Joi.string().required(),
@@ -60,6 +65,7 @@ export default {
     }
   },
   
+  // GET /api/order/create
   createOrder: {
     query: {
       token: Joi.string().required(),

@@ -169,4 +169,10 @@ function setFreeTime(req, res, next) {
         })
 }
 
-export default { profile, updateUser, setFreeTime };
+function listUser(req, res, next) {
+    return res.json({
+        status: 'ok'
+    })
+}
+
+export default { profile, updateUser, setFreeTime, listUser };
