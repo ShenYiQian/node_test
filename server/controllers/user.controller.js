@@ -176,7 +176,7 @@ function findInfoByOfficeWeekday(user, office, weekday, time) {
                 let officeData = info.freeTimes[office];
                 if (officeData != null) {
                     let dailyData = officeData[weekday];
-                    if (dailyData[time].state == 0) {
+                    if (dailyData[time].state === 0) {
                         resolve(user);
                     }
                 }
