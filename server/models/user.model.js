@@ -93,12 +93,7 @@ UserSchema.methods = {
  * Statics
  */
 UserSchema.statics = {
-    /**
-     * Get user
-     * @param {ObjectId} id - The objectId of user.
-     * @returns {Promise<User, APIError>}
-     */
-    get(id) {
+    getUserById(id) {
         return this.findById(id)
             .exec()
             .then((user) => {
@@ -109,11 +104,11 @@ UserSchema.statics = {
             });
     },
 
-    getUserById(id) {
-        return this.findById(id)
+    getUserByName(username) {
+        return this.find({username})
             .exec()
-            .then((user) => {
-                if (user) {
+            .then(user => {
+                if(user) {
                     return user;
                 }
                 return Promise.reject('没有找到用户');
