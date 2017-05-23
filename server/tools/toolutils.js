@@ -1,4 +1,4 @@
- import Crypto from 'crypto';
+import Crypto from 'crypto';
 import config from '../../config/config';
 
 export function sha1(str) {
@@ -18,7 +18,7 @@ export function dateDiff(dS, dE, interval = 'd') {
         case 'h':
             return parseInt((dE - dS) / 3600000);
         case 'd':
-            return parseInt((dE - dS ) / 86400000);
+            return parseInt((dE - dS) / 86400000);
         case 'w':
             return parseInt((dE - dS) / (86400000 * 7));
         case 'm':
