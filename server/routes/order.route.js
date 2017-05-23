@@ -6,7 +6,7 @@ import orderCtrl from '../controllers/order.controller';
 const router = express.Router(); // eslint-disable-line new-cap
 
 router.route('/create')
-  .get(validate(paramValidation.createOrder), orderCtrl.createOrder);
+    .get(validate(paramValidation.createOrder), orderCtrl.createOrder);
 
 export default router;
 
