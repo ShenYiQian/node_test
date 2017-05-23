@@ -36,11 +36,21 @@ export default {
     }
   },
 
-  // GET /api/user/list
   listUser: {
     query: {
+      token: Joi.string().required()
+    }
+  },
+
+  // GET /api/user/listfilter
+  listfilter: {
+    query: {
       token: Joi.string().required(),
-      filters: Joi.string().required()
+      identity: Joi.number().required(),
+      city: Joi.string().required(),
+      office: Joi.string().required(),
+      weekday: Joi.number().required(),
+      time: Joi.number().required()
     }
   },
   

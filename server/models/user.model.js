@@ -144,8 +144,15 @@ UserSchema.statics = {
       .skip(+skip)
       .limit(+limit)
       .exec();
+  },
+
+  listByIdentity(identity, city) {
+    //let criteria = city != null ? {identity, office, city} : {identity, office};
+    return this.find({ identity, city })
+      .sort({ createdAt: -1 })
+      .exec();
   }
-};
+}
 
 /**
  * @typedef User

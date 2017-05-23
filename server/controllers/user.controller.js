@@ -92,7 +92,7 @@ function setOfficeState(info, office, weekday, state, need) {
     let officeData = info.freeTimes[office];
     if (officeData != null) {
         let dailyData = officeData[weekday];
-        for(let i = 0; i < 2; i++) {
+        for (let i = 0; i < 2; i++) {
             dailyData[i] = setDailyData(i, state, need);
         }
     } else {
@@ -100,7 +100,7 @@ function setOfficeState(info, office, weekday, state, need) {
         for (let i = 0; i < 7; i++) {
             let dailyData = officeData[i] = [];
             if (i == weekday) {
-                for(let j = 0; j < 2; j++) {
+                for (let j = 0; j < 2; j++) {
                     dailyData[j] = setDailyData(j, state, need);
                 }
             } else {
@@ -169,10 +169,91 @@ function setFreeTime(req, res, next) {
         })
 }
 
-function listUser(req, res, next) {
-    return res.json({
-        status: 'ok'
+function findInfoByOfficeWeekday(user, office, weekday, time) {
+    return new Promise(function (resolve, reject) {
+        Info.findInfoByOwner(user._id)
+            .then(info => {
+                let officeData = info.freeTimes[office];
+                if (officeData != null) {
+                    let dailyData = officeData[weekday];
+                    if (dailyData[time].state == 0) {
+                        resolve(user);
+                    }
+                }
+                resolve(null);
+            })
+            .catch(e => {
+                resolve(null);
+            })
     })
 }
 
-export default { profile, updateUser, setFreeTime, listUser };
+function listUser(req, res, next) {
+    User.list({ skip: 50, limit: 50 })
+        .then(users => {
+            return res.json({
+                status: 'ok',
+                users
+            })
+        })
+        .catch(e => {
+            return res.json({
+                status: 'err',
+                msg: e
+            })
+        })
+}
+
+function listUserByOfficeWeekday(req, res, next) {
+    let { identity, city, office, weekday, time } = req.query;
+    let outputs = [];
+    User.listByIdentity(identity, city)
+        .then(users => {
+            if (users.length > 0) {
+                let promises = [];
+                users.map(v => {
+                    promises.push(findInfoByOfficeWeekday(v, office, weekday, time));
+                })
+                Promise.all(promises)
+                    .then(values => {
+                        values.map(v => {
+                            if (v != null) {
+                                outputs.push({
+                                    userId: v._id,
+                                    name: v.username,
+                                    desc: v.desc,
+                                    city: v.city,
+                                    avatar: v.uploadImages[0],
+                                    identity: v.identity,
+                                    hospital: v.hospital
+                                });
+                            }
+                        })
+
+                        res.json({
+                            status: 'ok',
+                            outputs
+                        })
+                    })
+                    .catch(e => {
+                        return res.json({
+                            status: 'err',
+                            msg: e
+                        })
+                    })
+            } else {
+                return res.json({
+                    status: 'ok',
+                    outputs
+                })
+            }
+        })
+        .catch(e => {
+            return res.json({
+                status: 'err',
+                msg: e
+            })
+        })
+}
+
+export default { profile, updateUser, setFreeTime, listUser, listUserByOfficeWeekday };

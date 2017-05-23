@@ -17,4 +17,7 @@ router.route('/setfreetime')
 router.route('/list')
   .get(validate(paramValidation.listUser), userCtrl.listUser);
 
+router.route('/listfilter')
+  .get(validate(paramValidation.listfilter), userCtrl.listUserByOfficeWeekday);
+
 export default router;

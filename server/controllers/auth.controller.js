@@ -7,50 +7,43 @@ import { sha1, dateDiff } from '../tools/toolutils';
 
 function register(req, res, next) {
   let { mobile, pswd, pswdcfm } = req.query;
-  let paramPassed = [mobile, pswd, pswdcfm].some(v => {
-    return v != null;
-  });
   let errStr = null;
-  if (!paramPassed) {
-    errStr = '参数错误';
+  if (pswd.length > 20) {
+    errStr = '密码长度过长(20个字符以内)';
+  } else if (pswd != pswdcfm) {
+    errStr = '两次输入的密码不一致';
   } else {
-    if (pswd.length > 20) {
-      errStr = '密码长度过长(20个字符以内)';
-    } else if (pswd != pswdcfm) {
-      errStr = '两次输入的密码不一致';
-    } else {
-      User.getUserByMobileNumber(mobile)
-        .then((user) => {
-          errStr = '该用户已存在';
-          return res.json({
-            status: 'err',
-            msg: errStr
+    User.getUserByMobileNumber(mobile)
+      .then((user) => {
+        errStr = '该用户已存在';
+        return res.json({
+          status: 'err',
+          msg: errStr
+        })
+      })
+      .catch(e => {
+        const user = new User({
+          mobileNumber: mobile,
+          password: sha1(pswd)
+        });
+
+        user.save()
+          .then(saveUser => {
+            const token = saveUser.genToken();
+
+            return res.json({
+              status: 'ok',
+              token
+            });
           })
-        })
-        .catch(e => {
-          const user = new User({
-            mobileNumber: mobile,
-            password: sha1(pswd)
-          });
-
-          user.save()
-            .then(saveUser => {
-              const token = saveUser.genToken();
-
-              return res.json({
-                status: 'ok',
-                token
-              });
-            })
-            .catch(e => next(e));
-        })
-    }
-    if (errStr) {
-      return res.json({
-        status: 'err',
-        msg: errStr
-      });
-    }
+          .catch(e => next(e));
+      })
+  }
+  if (errStr) {
+    return res.json({
+      status: 'err',
+      msg: errStr
+    });
   }
 
   if (errStr) {
