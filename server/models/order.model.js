@@ -9,6 +9,14 @@ const OrderSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         required: true
     },
+    weekday: {
+        type: Number,
+        required: true
+    },
+    timeQuantum: {
+        type: Number,
+        required: true
+    },
     startDate: {
         type: Date,
         default: Date.now()
@@ -80,8 +88,8 @@ OrderSchema.statics = {
             });
     },
 
-    findOrderByFrom(fromUser) {
-        return this.find({fromUser})
+    findOrderByFrom(fromUser, toUser, weekday, timeQuantum) {
+        return this.find({fromUser, toUser, weekday, timeQuantum})
             .exec()
             .then(order => {
                 if(order) {
