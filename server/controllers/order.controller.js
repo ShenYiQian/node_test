@@ -71,4 +71,4 @@ function newOrder(req, res, next) {
 }
 
 
-export default { createOrder };
+export default { newOrder };
