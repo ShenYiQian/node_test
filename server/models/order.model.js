@@ -11,11 +11,11 @@ const OrderSchema = new mongoose.Schema({
     },
     startDate: {
         type: Date,
-        required: true
+        default: Date.now()
     },
     endDate: {
         type: Date,
-        required: true
+        default: Date.now()
     },
     orderStatus: {
         type: Number,
@@ -60,6 +60,7 @@ OrderSchema.statics = {
             .limit(+limit)
             .exec();
     },
+
     listByTo(toUser, {skip = 0, limit = 50} = {}) {
         return this.find({toUser})
             .sort({ createdAt: -1 })
@@ -67,6 +68,7 @@ OrderSchema.statics = {
             .limit(+limit)
             .exec();
     },
+
     findOrderById(id) {
         return this.findById(id)
             .exec()
@@ -75,6 +77,17 @@ OrderSchema.statics = {
                     return order;
                 }
                 return Promise.reject('没有找到这条记录');
+            });
+    },
+
+    findOrderByFrom(fromUser) {
+        return this.find({fromUser})
+            .exec()
+            .then(order => {
+                if(order) {
+                    return order;
+                }
+                return Promise.reject('没有找到用户');
             });
     }
 }
