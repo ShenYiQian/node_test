@@ -70,5 +70,97 @@ function newOrder(req, res, next) {
         })
 }
 
+function listOrders(req, res, next) {
+    let { token, page } = req.query;
+    page = page || 0;
+    authCtrl.checkToken(token)
+        .then(user => {
+            Order.listByFrom(user._id, {skip: page*50, limit: 50} )
+                .then(orders => {
+                    let result = [];
+                    orders.map(v => {
+                        let { toUser, weekday, timeQuantum, orderStatus } = v;
+                        result.push({
+                            toUser,
+                            weekday,
+                            timeQuantum,
+                            orderStatus
+                        });
+                        return res.json({
+                            status: 'ok',
+                            result
+                        })
+                    })
+                })
+                .catch(e => {
+                    return res.json({
+                        status: 'err',
+                        msg: e
+                    })          
+                })
+        })
+        .catch(e => {
+            return res.json({
+                status: 'err',
+                msg: e
+            })
+        })
+}
 
-export default { newOrder };
+function changeStatus(req, res, next) {
+    let { token, order, status } = req.query;
+    authCtrl.checkToken(token)
+        .then(user => {
+            Order.getOrderById(order)
+                .then(getOrder => {
+                    if(getOrder.fromUser == user._id && status === 2) {
+                        getOrder.changeStatus(status)
+                            .then(saveOrder => {
+                                return res.json({
+                                    status: 'ok',
+                                    saveOrder
+                                });
+                            })
+                            .catch(e => {
+                                return res.json({
+                                    status: 'err',
+                                    msg: e
+                                });
+                            })
+                    } else if(getOrder.toUser == user._id && (status === 1 || status === 3)){
+                        getOrder.changeStatus(status)
+                            .then(saveOrder => {
+                                return res.json({
+                                    status: 'ok',
+                                    saveOrder
+                                });
+                            })
+                            .catch(e => {
+                                return res.json({
+                                    status: 'err',
+                                    msg: e
+                                })
+                            })
+                    } else {
+                        return res.json({
+                            status: 'err',
+                            msg: '您不能进行该操作'
+                        })
+                    }
+                })
+                .catch(e => {
+                    return res.json({
+                        status: 'err',
+                        msg: e
+                    })
+                })
+        })
+        .catch(e => {
+            return res.json({
+                status: 'err',
+                msg: e
+            })
+        })
+}
+
+export default { newOrder, listOrders, changeStatus };
