@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import http from 'http';
 import util from 'util';
 
 // config should be imported before importing any other file
@@ -27,7 +28,8 @@ if (config.MONGOOSE_DEBUG) {
 // src: https://github.com/mochajs/mocha/issues/1912
 if (!module.parent) {
   // listen on port config.port
-  app.listen(config.port, () => {
+  //http.createServer(app).listen(config.port, config.host);
+  app.listen(config.port, config.host, () => {
     console.info(`server started on port ${config.port} (${config.env})`); // eslint-disable-line no-console
   });
 }
