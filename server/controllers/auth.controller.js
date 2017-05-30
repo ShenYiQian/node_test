@@ -33,7 +33,8 @@ function register(req, res, next) {
 
                         return res.json({
                             status: 'ok',
-                            token
+                            token,
+                            user: saveUser.getUserInfo()
                         });
                     })
                     .catch(e => next(e));
@@ -71,7 +72,8 @@ function login(req, res, next) {
                 console.log('genToken = ' + token);
                 return res.json({
                     status: 'ok',
-                    token
+                    token,
+                    user: user.getUserInfo()
                 })
             }
         })

@@ -86,6 +86,17 @@ UserSchema.methods = {
                 loginAt: this.updatedAt
             }, config.jwtSecret);
         }
+    },
+
+    getUserInfo() {
+        return {
+            userId: this._id,
+            phone: this.mobileNumber,
+            city: this.city,
+            hospital: this.hospital,
+            desc: this.desc,
+            avatar: this.uploadImages
+        }
     }
 };
 
