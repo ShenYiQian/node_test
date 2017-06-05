@@ -40,6 +40,13 @@ const config = {
     host: envVars.MONGO_HOST,
     port: envVars.MONGO_PORT
   },
+  sql: {
+    host      : 'localhost',
+    port      : '3306',
+    user      : 'root',
+    password  : 'idontknow',
+    database: 'node_test'
+  },
   secretKey: 'syqtest' 
 };
 
