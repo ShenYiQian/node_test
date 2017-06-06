@@ -11,6 +11,8 @@ const debug = require('debug')('express-mongoose-es6-rest-api:index');
 
 mongoose.Promise = Promise;
 /*
+const createTestTable = ` CREATE TABLE IF NOT EXISTS t_user_test ( user_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT, username VARCHAR(8) CHARACTER SET UTF8MB4 COLLATE UTF8MB4_BIN NOT NULL DEFAULT '' COMMENT '姓名' ); `
+
 let connection;
 function handleDisconnect() {
   connection = mysql.createConnection(config.sql);
@@ -24,16 +26,21 @@ function handleDisconnect() {
   });
   connection.on('error', err => {
     console.log('db error', err);
-    if(err.code === 'PROTOCOL_CONNECTION_LOST') {
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
       handleDisconnect();
     } else {
       throw err;
     }
   });
+  connection.query(createTestTable, (err, result) => {
+    if(err) console.log(err);
+
+    console.log('create test table success');
+  })
 }
 
 handleDisconnect();*/
-
+/*
 // connect to mongo db
 const mongoUri = config.mongo.host;
 mongoose.connect(mongoUri, { server: { socketOptions: { keepAlive: 1 } } });
@@ -47,7 +54,7 @@ if (config.MONGOOSE_DEBUG) {
     debug(`${collectionName}.${method}`, util.inspect(query, false, 20), doc);
   });
 }
-
+*/
 // module.parent check is required to support mocha watch
 // src: https://github.com/mochajs/mocha/issues/1912
 if (!module.parent) {
