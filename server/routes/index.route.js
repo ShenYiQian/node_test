@@ -4,8 +4,11 @@ import authRoutes from './auth.route';
 import authCtrl from '../controllers/auth.controller';
 import fs from 'fs-extra';
 import uuid from 'node-uuid';
+import request from 'request';
+import cheerio from 'cheerio';
 
 const router = express.Router(); // eslint-disable-line new-cap
+const robotUrl = 'http://cn.bing.com/search?q=%E5%A4%9A%E7%82%B9%E6%89%A7%E4%B8%9A&qs=n&form=QBRE&sp=-1&pq=%E5%A4%9A%E7%82%B9%E6%89%A7%E4%B8%9A&sc=8-4&sk=&cvid=2DDBDB23273B4B98B57B6FA92FD7581E';
 
 /** GET /health-check - Check service health */
 router.get('/health-check', (req, res) =>
@@ -55,6 +58,29 @@ router.post('/upload', (req, res) => {
                 })
             })
     }
+});
+
+router.get('/robot', (req, res) => {
+  request(robotUrl, (error, response, body) => {
+    if(!error && response.statusCode == 200) {
+      const $ = cheerio.load(body);
+      let results = [];
+      $('li.b_algo').each(function(i, e) {
+        let title = $('a', e).text();
+        let href = $('a', e).attr('href');
+        let param = $('p', e).text();
+        results.push({
+          title,
+          href,
+          param
+        });
+      })
+      res.json({
+        status: 'ok',
+        results
+      });
+    }
+  })
 });
 
 router.get('/testlogin', (req, res) => {
