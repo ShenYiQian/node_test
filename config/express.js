@@ -13,8 +13,11 @@ import expressValidation from 'express-validation';
 import helmet from 'helmet';
 import winstonInstance from './winston';
 import routes from '../server/routes/index.route';
+import robotCtrl from '../server/controllers/robot.controller';
 import config from './config';
 import APIError from '../server/helpers/APIError';
+import path from 'path';
+import schedule from 'node-schedule';
 
 const app = express();
 
@@ -33,6 +36,12 @@ app.use('/public', express.static(path.join(__dirname, '../public')));
 app.use(busboy({
   limits: { fileSize: 4 * 1024 * 1024 },
 }));
+
+function scheduleJob() {
+  schedule.scheduleJob('* * 23 * * *', robotCtrl.requestFile);
+}
+
+scheduleJob();
 
 // secure apps by setting various HTTP headers
 app.use(helmet());
@@ -54,6 +63,8 @@ if (config.env === 'development') {
 
 // mount all routes on /api path
 app.use('/api', routes);
+
+app.use('/static', express.static(path.join(__dirname, '../public')));
 
 // if error is not an instanceOf APIError, convert it.
 app.use((err, req, res, next) => {

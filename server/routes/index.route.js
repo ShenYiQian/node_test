@@ -2,8 +2,9 @@ import express from 'express';
 import userRoutes from './user.route';
 import authRoutes from './auth.route';
 import authCtrl from '../controllers/auth.controller';
-import fs from 'fs-extra';
+import fs from 'fs';
 import uuid from 'node-uuid';
+import path from 'path';
 import request from 'request';
 import cheerio from 'cheerio';
 
@@ -61,26 +62,50 @@ router.post('/upload', (req, res) => {
 });
 
 router.get('/robot', (req, res) => {
-  request(robotUrl, (error, response, body) => {
-    if(!error && response.statusCode == 200) {
-      const $ = cheerio.load(body);
-      let results = [];
-      $('li.b_algo').each(function(i, e) {
-        let title = $('a', e).text();
-        let href = $('a', e).attr('href');
-        let param = $('p', e).text();
-        results.push({
-          title,
-          href,
-          param
-        });
-      })
-      res.json({
-        status: 'ok',
-        results
-      });
-    }
-  })
+    const filePath = path.join(__dirname, '../../public/robot.json');
+    let results = [];
+    fs.readFile(filePath, 'utf-8', function (err, data) {
+        if (err) {
+            console.log('readFile err');
+            request(config.robotUrl, (error, response, body) => {
+                console.log('error = ', error, response.statusCode);
+                if (!error && response.statusCode == 200) {
+                    const $ = cheerio.load(body);
+                    $('li.b_algo').each(function (i, e) {
+                        let title = $('a', e).text();
+                        let href = $('a', e).attr('href');
+                        let param = $('p', e).text();
+                        results.push({
+                            title,
+                            href,
+                            param
+                        });
+                    })
+
+                    fs.writeFile(filePath, JSON.stringify(results), { 'flag': 'a' }, function (err) {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        console.log('save robot.json success');
+                    });
+
+                    return res.json({
+                        status: 'ok',
+                        results
+                    })
+                }
+            });
+        } else {
+            console.log('robot from json');
+            results = JSON.parse(data);
+
+            return res.json({
+                status: 'ok',
+                results
+            });
+        }
+    })
 });
 
 router.get('/testlogin', (req, res) => {
