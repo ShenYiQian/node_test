@@ -9,7 +9,8 @@ const plugins = gulpLoadPlugins();
 const paths = {
   js: ['./**/*.js', '!dist/**', '!node_modules/**', '!coverage/**'],
   nonJs: ['./package.json', './.gitignore', './.env', './public'],
-  tests: './server/tests/*.js'
+  tests: './server/tests/*.js',
+  public: './public/**'
 };
 
 // Clean up dist and coverage directory
@@ -21,6 +22,19 @@ gulp.task('clean', () =>
 gulp.task('copy', () =>
   gulp.src(paths.nonJs)
     .pipe(plugins.newer('dist'))
+    .pipe(gulp.dest('dist'))
+);
+
+gulp.task('copy', () =>
+  gulp.src(paths.public, { base: '.' })
+    .pipe(plugins.newer('dist'))
+    .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.sourcemaps.write('.', {
+      includeContent: false,
+      sourceRoot(file) {
+        return path.relative(file.path, __dirname);
+      }
+    }))
     .pipe(gulp.dest('dist'))
 );
 
