@@ -8,9 +8,8 @@ const plugins = gulpLoadPlugins();
 
 const paths = {
   js: ['./**/*.js', '!dist/**', '!node_modules/**', '!coverage/**'],
-  nonJs: ['./package.json', './.gitignore', './.env', './public'],
-  tests: './server/tests/*.js',
-  public: './public/**'
+  nonJs: ['./package.json', './.gitignore', './.env', './public/**'],
+  tests: './server/tests/*.js'
 };
 
 // Clean up dist and coverage directory
@@ -18,12 +17,10 @@ gulp.task('clean', () =>
   del.sync(['dist/**', 'dist/.*', 'coverage/**', '!dist', '!coverage'])
 );
 
-// Compile ES6 to ES5 and copy to dist
-gulp.task('babel', () =>
-  gulp.src([...paths.js, '!gulpfile.babel.js'], { base: '.' })
-    .pipe(plugins.newer('dist'))
-    .pipe(plugins.sourcemaps.init())
-    .pipe(plugins.babel())
+// Copy non-js files to dist
+gulp.task('copy', () =>
+  gulp.src(paths.nonJs, { base: '.' })
+    .pipe(plugins.newer('dist')).pipe(plugins.sourcemaps.init())
     .pipe(plugins.sourcemaps.write('.', {
       includeContent: false,
       sourceRoot(file) {
@@ -33,17 +30,12 @@ gulp.task('babel', () =>
     .pipe(gulp.dest('dist'))
 );
 
-// Copy non-js files to dist
-gulp.task('copy', () =>
-  gulp.src(paths.nonJs)
-    .pipe(plugins.newer('dist'))
-    .pipe(gulp.dest('dist'))
-);
-
-gulp.task('copy', () =>
-  gulp.src(paths.public, { base: '.' })
+// Compile ES6 to ES5 and copy to dist
+gulp.task('babel', () =>
+  gulp.src([...paths.js, '!gulpfile.babel.js'], { base: '.' })
     .pipe(plugins.newer('dist'))
     .pipe(plugins.sourcemaps.init())
+    .pipe(plugins.babel())
     .pipe(plugins.sourcemaps.write('.', {
       includeContent: false,
       sourceRoot(file) {

@@ -4,7 +4,6 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import compress from 'compression';
 import busboy from 'connect-busboy';
-import path from 'path';
 import methodOverride from 'method-override';
 import cors from 'cors';
 import httpStatus from 'http-status';
